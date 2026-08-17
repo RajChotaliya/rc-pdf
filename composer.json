@@ -1,0 +1,44 @@
+{
+    "name": "rajchotaliya/rc-pdf",
+    "description": "Laravel PDF generation package with Crystal Report style Page Header, Page Body and Page Footer support (powered by mPDF).",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "pdf", "mpdf", "report", "page header", "page footer"],
+    "authors": [
+        {
+            "name": "Raj Chotaliya",
+            "email": "raj@development360inc.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+        "mpdf/mpdf": "^8.2"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^7.0|^8.0|^9.0|^10.0",
+        "phpunit/phpunit": "^9.0|^10.0|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "RajChotaliya\\RcPdf\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RajChotaliya\\RcPdf\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "RajChotaliya\\RcPdf\\RcPdfServiceProvider"
+            ],
+            "aliases": {
+                "RcPdf": "RajChotaliya\\RcPdf\\Facades\\RcPdf"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
