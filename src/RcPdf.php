@@ -289,25 +289,34 @@ class RcPdf
     }
 
     /**
-     * Write the Group Footer pinned to the bottom of the current page, unless
-     * it doesn't fit in the remaining space — in which case a fresh page is
-     * started first (with enough bottom margin reserved to fit it) so it
-     * never overlaps the preceding body content or the Page Footer.
+     * Write the Group Footer pinned to the true bottom of the current page,
+     * unless it doesn't fit in what's actually left there — in which case a
+     * fresh page is started with just enough bottom margin reserved to fit
+     * it, so it never overlaps the preceding body content.
+     *
+     * The footer is drawn as position:absolute measured from the page's
+     * physical bottom edge, not from the configured bMargin band — so "does
+     * it fit" has to be checked against the real leftover space to that
+     * edge ($mpdf->h - $mpdf->y), not against bMargin itself. That keeps
+     * the document's bottom margin free to stay small for normal content
+     * flow (more rows per page) instead of being permanently inflated on
+     * every page just to guarantee room for a footer that only ever lands
+     * on the last one.
      */
     protected function writeGroupFooter(Mpdf $mpdf, string $html): void
     {
         $leftMargin = (float) ($this->margins['left'] ?? 15);
         $rightMargin = (float) ($this->margins['right'] ?? 15);
         $contentWidth = $mpdf->w - $leftMargin - $rightMargin;
-        $bottomOffset = $mpdf->bMargin - $mpdf->margin_footer + $this->toMillimeters($this->groupFooterGap);
+        $gapMm = $this->toMillimeters($this->groupFooterGap);
 
         $height = $mpdf->_getHtmlHeight($html);
-        $remaining = ($mpdf->h - $mpdf->bMargin) - $mpdf->y;
+        $remaining = $mpdf->h - $mpdf->y;
+        $bottomOffset = $gapMm;
 
-        if ($height > $remaining) {
-            $needed = $bottomOffset + $height + $this->toMillimeters($this->groupFooterGap);
+        if ($height + $gapMm > $remaining) {
+            $needed = $height + $gapMm;
             $mpdf->WriteHTML('<pagebreak margin-bottom="'.$needed.'mm" />');
-            $bottomOffset = $needed - $mpdf->margin_footer;
         }
 
         $mpdf->WriteHTML(sprintf(
